@@ -15,7 +15,7 @@ atexit.register(readline.write_history_file, histfile)
 
 class SimpleCompleter:
     def __init__(self):
-        self.commands = ["SET", "GET", "DEL", "EXIT"]
+        self.commands = ["SET", "GET", "DEL", "KEYS", "EXIT"]
 
     def complete(self, text, state):
         response = None
@@ -28,7 +28,7 @@ class SimpleCompleter:
                 ]
 
             else:
-                self.matches = self.options[:]
+                self.matches = self.commands[:]
 
         # Return the state'th item from the match list,
         # if we have that many.
@@ -60,7 +60,9 @@ class SimpleCompleter:
 
 
 # 2. Attach the completer to readline
-readline.set_completer(SimpleCompleter.complete)
+#
+completer = SimpleCompleter()
+readline.set_completer(completer.complete)
 readline.parse_and_bind("tab: complete")
 
 
@@ -286,6 +288,7 @@ class CustomExecutor(RedisEngine):
             "SET": self.set_handlers,
             "GET": self.get_handlers,
             "DEL": self.del_handlers,
+            "KEYS": self.key_handlers,
             "HELP": self.help,
         }
 
@@ -293,13 +296,15 @@ class CustomExecutor(RedisEngine):
         new_up = input.split()
         if not new_up:
             return "Empty Command"
-        cmd = new_up[0].upper()
+        cmd = new_up[0].strip().upper()
         handlers = self.command_registry.get(cmd)
         args = new_up[1:]
 
         if not handlers:
             return f"Err: Unkown Command {cmd}"
         try:
+            if handlers == self.key_handlers:
+                return handlers()
             return handlers(args)
 
         except ValueError as e:
@@ -347,10 +352,20 @@ class CustomExecutor(RedisEngine):
             else:
                 return "Unkown Command\n Usage: help [command/function]\n It will try to give you simple usage of that command "
 
+    def key_handlers(self):
+        return [k for k, _ in self.inorder()]
+
+    def clear_screen(self):
+        os.system("clear")
+
     def cli_call(self):
         while True:
             inp = input("redis > ")
             if not inp:
+                continue
+
+            if inp.split()[0].upper() in ["CLR", "CLEAR"]:
+                self.clear_screen()
                 continue
             if inp.split()[0].upper() == "EXIT":
                 print("Bye! ")
