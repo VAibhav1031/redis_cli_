@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+# runtime 
+~/redis_cli/log/history/
+!~/redis_cli/log/history/.gitkeep

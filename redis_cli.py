@@ -23,7 +23,7 @@ class SimpleCompleter:
         if state == 0:
             # This is the first time for this text,
             # so build a match list.
-            if text:
+            if text.strip():
                 self.matches = [
                     cmd for cmd in self.commands if cmd.startswith(text.upper())
                 ]
@@ -97,7 +97,7 @@ class CustomExecutor(RedisEngine):
             return handlers(args)
 
         except ValueError as e:
-            print(f"Error : {e}")
+            return f"Error : {e}"
 
     def set_handlers(self, args):
         if len(args) != 2:
@@ -158,10 +158,11 @@ class CustomExecutor(RedisEngine):
                         continue
                     output = self.parser(line)
                     if output is not None:
-                        print(output)
+                        return output
         except FileNotFoundError:
-            print("Script file not found.")
+            return "Script file not found."
 
+    # it is for the direct run , not Over the network
     def cli_call(self):
         while True:
             inp = input("redis > ")
@@ -181,5 +182,6 @@ class CustomExecutor(RedisEngine):
             print(self.parser(inp))
 
 
-com = CustomExecutor()
-com.cli_call()
+if __name__ == "__main__":
+    com = CustomExecutor()
+    com.cli_call()
