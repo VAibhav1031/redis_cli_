@@ -9,6 +9,8 @@ wheels/
 # Virtual environments
 .venv
 
-# runtime 
-log/history/.redis_net_history
+# # Ignore everything inside log/history/
+log/history/*
+# Except .gitkeep
 !log/history/.gitkeep
+
