@@ -1,4 +1,4 @@
-# This  is  the  simple..and..nice  like Redis-CLI
+# This  is  the  simple..and..nice  Redis like CLI
 
 Breif about this  project, it is just simple idea based project, i was working on Tree Data Structure using AVL, Splay and many other
 then i thought why not to make something out of it , then i try to make  simple  library called SortedMap, just like you seein C++ 
